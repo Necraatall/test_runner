@@ -1,0 +1,29 @@
+this project is prepared for TOSCA tutorial
+contains pom style
+
+run it for percentage results from TERMINAL
+pipenv run python -m pytest
+
+run it for state results from TERMINAL
+py.test -v -s
+
+
+pips:
+pip3 install 
+https://www.educative.io/edpresso/installing-pip3-in-ubuntu
+
+pipenv install 
+https://pypi.org/project/pipenv/
+
+For TOSCA
+pip3 install testproject-python-sdk
+and see more here: 
+https://blog.testproject.io/2020/07/15/getting-started-with-testproject-python-sdk/
+
+
+for non-ToSCA
+pip3 install pytest-html
+
+
+Another way of: 
+https://github.com/prashanth-sams/pytest-html-reporter
