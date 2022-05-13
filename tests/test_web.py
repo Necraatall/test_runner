@@ -1,26 +1,43 @@
 import pytest
+import json
+from pages.result import DuckDuckGoResultPage
+from pages.search import DuckDuckGoSearchPage
 
-from selenium.webdriver import Chrome
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import Chrome, Firefox
 
-# caps = Chrome().desired_capabilities.CHROME.copy()
-# caps['acceptInsecureCerts'] = True
-# driver = Chrome(desired_capabilities=caps)
-
-#asi nutno spoustet i toto:
-#chromedriver --url-base=/wd/hub 
-
-
-print("jedu")
-driver = Chrome()
-driver.implicitly_wait(10)
-driver.get("https://stackoverflow.com/questions/70230636/pytest-is-not-accessed-import-pytest-could-not-be-resolved-pylance")
-
-print (driver.title)
-print (driver.current_url)
-driver.quit()
+@pytest.fixture(scope='session')
+def config():
+  with open('tests/config.json') as config_file:
+    data = json.load(config_file)
+  return data
 
 @pytest.fixture
-def browser():
+def browser(config):
+  # Initialize ChromeDriver
+  if config['browser'] == 'chrome':
+    driver = Chrome()
+  elif config['browser'] == 'firefox':
+    driver = Firefox()
+  else:
+    raise Exception(f'"{config["browser"]}" is not a supported browser')
+
+  driver.implicitly_wait(config['wait_time'])
+  # Return the driver object at the end of setup
   yield driver
+  # For cleanup, quit the driver
   driver.quit()
+
+def test_basic_duckduckgo_search(browser):
+  # Set up test case data
+  PHRASE = 'panda'
+
+  # Search for the phrase
+  search_page = DuckDuckGoSearchPage(browser)
+  search_page.load()
+  search_page.search(PHRASE)
+
+  # Verify that results appear
+  result_page = DuckDuckGoResultPage(browser)
+  assert result_page.link_div_count() > 0
+  assert result_page.phrase_result_count(PHRASE) > 0
+  assert result_page.search_input_value() == PHRASE
